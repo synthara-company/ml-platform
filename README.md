@@ -2,7 +2,7 @@
 
 A modern presentation and learning platform powered by Google Gemini AI.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-blue)](https://keynote-niladridas-ecru.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue)](https://synthara-ml-platform.vercel.app)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.3-blue)](https://reactjs.org/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
