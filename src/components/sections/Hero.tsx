@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ChevronRight, Search, Cpu, Github, Twitter, 
   Linkedin, Mail, BookOpen, Ship, Cloud, Code2, 
-  Image, Copyright, X, Brain 
+  Image, Copyright, X, Brain, MessageSquare
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { CreditsModal } from '../ui/CreditsModal';
@@ -249,6 +249,24 @@ export function Hero() {
       icon: Code2, 
       color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
       action: () => window.open('https://hook-first.vercel.app', '_blank')
+    },
+    { 
+      label: 'Our Forum', 
+      icon: MessageSquare, 
+      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+      action: () => window.open('https://synthara-developers-forum.vercel.app', '_blank')
+    },
+    { 
+      label: 'Calculus Visualization', 
+      icon: Brain, 
+      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+      action: () => window.open('https://synthara-calculus-visualization.vercel.app/', '_blank')
+    },
+    { 
+      label: 'Calculus Image Generator', 
+      icon: Image, 
+      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+      action: () => window.open('https://synthara-calculus-image-generator.vercel.app/', '_blank')
     }
   ];
 
