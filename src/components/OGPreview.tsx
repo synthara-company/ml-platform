@@ -11,11 +11,11 @@ export function OGPreview() {
   const meta = {
     url: isDevelopment ? 'http://localhost:5173' : domains.primary,
     alternateUrl: domains.secondary,
-    title: 'ML Learning Platform',
-    description: 'Your interactive guide to mastering machine learning concepts. Built with practical implementation experience and industry best practices.',
+    title: 'Cloud Environment Automation | Brev.dev',
+    description: 'Instantly deploy and manage production-ready cloud environments. Built for modern development teams with infrastructure as code and automated DevOps practices.',
     image: isDevelopment 
       ? 'http://localhost:5173/og-image.png' 
-      : 'https://raw.githubusercontent.com/bniladridas/keynote.niladridas/main/public/og-image.png',
+      : 'https://raw.githubusercontent.com/brev-dev/cloud-automation/main/public/og-image.png',
   };
 
   return (

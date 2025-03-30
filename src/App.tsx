@@ -16,6 +16,7 @@ import { PrivacyPolicy } from './components/legal/PrivacyPolicy';
 import { CookiePolicy } from './components/legal/CookiePolicy';
 import { CookieConsent } from './components/CookieConsent';
 import { Footer } from './components/Footer';
+import DocumentAnalysisInterface from './components/sections/DocumentAnalysisInterface';
 
 // Define a type for user data
 interface UserData {
@@ -90,15 +91,15 @@ const MainContent: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#1c2128] text-primary tracking-wide leading-relaxed relative flex flex-col">
       {/* Cookie Consent must be mounted at all times */}
-      <CookieConsent />
+      <CookieConsent className="z-50" />
       
-      {/* Welcome bar */}
+      {/* Welcome bar - made responsive */}
       {formSubmitted && userData && (
-        <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 text-white py-0.5 px-4 z-50 backdrop-blur-xl border-b border-white/5">
+        <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 text-white py-0.5 px-2 sm:px-4 z-40 backdrop-blur-xl border-b border-white/5">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-xs">
+            <div className="flex items-center gap-1.5 text-xs sm:text-sm">
               <span className="text-white/50">Welcome,</span>
-              <span className="font-medium">{userData.name}</span>
+              <span className="font-medium truncate max-w-[150px] sm:max-w-none">{userData.name}</span>
             </div>
             <button
               onClick={() => {
@@ -106,22 +107,9 @@ const MainContent: React.FC = () => {
                 setUserData(null);
                 setFormSubmitted(false);
               }}
-              className="text-white/50 hover:text-white flex items-center gap-1 px-1.5 py-0.5 rounded-md hover:bg-white/10 transition-colors text-xs"
+              className="text-xs sm:text-sm px-2 py-1 hover:bg-white/5 rounded-md transition-colors"
             >
-              <span>Sign Out</span>
-              <svg 
-                className="w-3 h-3" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
-                />
-              </svg>
+              Sign Out
             </button>
           </div>
         </div>
@@ -258,7 +246,7 @@ const MainContent: React.FC = () => {
       )}
         
       {/* Application content */}
-      <div className="relative z-10 flex-1">
+      <div className="relative z-10 flex-1 w-full max-w-[2560px] mx-auto">
         <Routes>
           <Route path="/" element={<Hero />} />
           <Route path="/learn" element={<LearningInterface />} />
@@ -269,6 +257,7 @@ const MainContent: React.FC = () => {
           <Route path="/generate" element={<ImageGenerationInterface />} />
           <Route path="/simple-blur" element={<SimpleBlurForm />} />
           <Route path="/microservices" element={<MicroservicesInterface />} />
+          <Route path="/document-analysis" element={<DocumentAnalysisInterface />} />
         </Routes>
         <FloatingBugReport />
       </div>

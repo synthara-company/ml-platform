@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { 
-  Cpu, Memory, HardDrive, Monitor, AlertTriangle, 
+  Cpu, Memory, HardDrive, Monitor, AlertTriangle, Info,
   CheckCircle, XCircle, Battery, BatteryFull, BatteryWarning 
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -332,12 +332,19 @@ export function SystemRequirementsChecker() {
         {/* Similar blocks for Memory and GPU */}
         {/* ... */}
 
-        <div className="mt-4 p-4 bg-[#1c2128] rounded-lg border border-[#30363d]/50">
+        {/* System Requirements Note */}
+        <div className="mt-4 p-4 bg-[#1c2128] rounded-lg border border-[#30363d]/50 space-y-2">
           <div className="flex items-center gap-2 text-sm text-yellow-400">
             <AlertTriangle className="w-4 h-4" />
             <p>
-              Note: Browser-based system detection is limited. For accurate requirements checking,
+              Browser-based system detection is limited. For accurate requirements checking,
               download our system checker tool or check your system specifications manually.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-blue-400">
+            <Info className="w-4 h-4" />
+            <p>
+              Battery status information is only available in Chrome and Chrome-based browsers.
             </p>
           </div>
         </div>

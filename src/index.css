@@ -2,10 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Base styles */
+@layer base {
+  html {
+    font-family: 'DM Sans', sans-serif;
+    color: #c2d4c2;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-[#1c2128] text-primary antialiased min-h-screen overflow-x-hidden;
+  }
+
+  /* Responsive text sizes */
+  h1 {
+    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  h2 {
+    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  h3 {
+    @apply text-lg sm:text-xl md:text-2xl lg:text-3xl;
+  }
+
+  p {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+}
+
+/* Responsive container */
+.container {
+  @apply px-4 sm:px-6 lg:px-8 mx-auto;
+  max-width: 2560px;
+}
+
+/* Responsive grid layouts */
+.grid-responsive {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6;
+}
+
+/* Responsive padding and margins */
+.section-padding {
+  @apply py-8 sm:py-12 md:py-16 lg:py-20;
+}
+
+/* Better touch targets for mobile */
+.touch-target {
+  @apply min-h-[44px] min-w-[44px];
+}
+
+/* Prevent layout shift on different screen sizes */
+.maintain-aspect-ratio {
+  aspect-ratio: 16 / 9;
+}
+
+/* Responsive images */
+img {
+  @apply max-w-full h-auto;
+}
+
+/* Media query for TV screens */
+@media (min-width: 1920px) {
+  .tv-scaling {
+    font-size: 120%;
+  }
+}
+
+/* Media query for tablets in landscape */
+@media (min-width: 1024px) and (orientation: landscape) {
+  .tablet-landscape {
+    @apply max-w-[1024px] mx-auto;
+  }
+}
+
+/* Prevent text from becoming too large on huge screens */
+@media (min-width: 2560px) {
+  html {
+    font-size: 18px;
+  }
+}
+
 @layer utilities {
   .bg-noise {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     opacity: 0.15;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 }
 
@@ -90,3 +184,50 @@ textarea {
 .prose blockquote {
   @apply border-l-4 border-primary/20 pl-4 italic;
 }
+
+/* Hexagonal clip path */
+.clip-hexagon {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Clip paths */
+.clip-triangle {
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+
+/* Animations */
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(100%) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(100%) rotate(-360deg); }
+}
+
+@keyframes particle-fade {
+  0%, 100% { opacity: 0; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-10px); }
+}
+
+@keyframes slide-right {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes spin-0 { to { transform: rotate(360deg) scale(1.2); } }
+@keyframes spin-1 { to { transform: rotate(-360deg) scale(1.15); } }
+@keyframes spin-2 { to { transform: rotate(180deg) scale(1.1); } }
+
+@keyframes float-0 { 50% { transform: translateY(-5px); } }
+@keyframes float-1 { 50% { transform: translateY(-8px); } }
+@keyframes float-2 { 50% { transform: translateY(-6px); } }
+@keyframes float-3 { 50% { transform: translateY(-9px); } }
+@keyframes float-4 { 50% { transform: translateY(-7px); } }
+@keyframes float-5 { 50% { transform: translateY(-10px); } }

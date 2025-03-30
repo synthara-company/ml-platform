@@ -5,7 +5,7 @@ import {
   ChevronRight, Search, Cpu, Github, Twitter, 
   Linkedin, Mail, BookOpen, Ship, Cloud, Code2, 
   Image, Copyright, X, Brain, MessageSquare, Server,
-  Users
+  Users, FileText
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { CreditsModal } from '../ui/CreditsModal';
@@ -357,6 +357,12 @@ export function Hero() {
       action: () => navigate('/generate')
     },
     { 
+      label: 'Document Analysis', 
+      icon: FileText, 
+      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+      action: () => navigate('/document-analysis')
+    },
+    { 
       label: 'Microservices', 
       icon: Server, 
       color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
@@ -512,19 +518,120 @@ export function Hero() {
           <div className="flex items-center gap-3">
             <motion.button
               onClick={announcement.action}
-              className={`bg-gradient-to-r ${announcement.buttonGradient} text-white px-5 py-2 rounded-xl flex items-center gap-2 shadow-lg shadow-${announcement.gradientFrom}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="relative group"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               initial={{ opacity: 0.9 }}
               animate={{ opacity: 1 }}
             >
-              <announcement.buttonIcon className="w-4 h-4" />
-              {announcement.buttonText}
+              {/* Multiple geometric instances */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
+                {/* Instance 1 - Rotating hexagons */}
+                {[...Array(3)].map((_, i) => (
+                  <div 
+                    key={`hex-${i}`} 
+                    className="absolute inset-0" 
+                    style={{
+                      transform: `rotate(${i * 30}deg) scale(${1.2 - i * 0.05})`,
+                      animation: `spin-${i} ${8 + i * 2}s linear infinite`
+                    }}
+                  >
+                    <div className={`
+                      w-full h-full 
+                      bg-gradient-to-r from-purple-600/20 to-blue-600/20 
+                      clip-hexagon
+                    `} />
+                  </div>
+                ))}
+
+                {/* Instance 2 - Floating triangles */}
+                {[...Array(6)].map((_, i) => (
+                  <div
+                    key={`tri-${i}`}
+                    className="absolute w-4 h-4 clip-triangle"
+                    style={{
+                      top: `${20 + i * 10}%`,
+                      left: `${10 + i * 15}%`,
+                      animation: `float-${i} ${3 + i}s ease-in-out infinite`,
+                      opacity: 0.2,
+                      background: i % 2 ? 'linear-gradient(to right, #9333ea, #2563eb)' : 'linear-gradient(to right, #2563eb, #9333ea)'
+                    }}
+                  />
+                ))}
+
+                {/* Instance 3 - Orbiting dots */}
+                <div className="absolute inset-0">
+                  {[...Array(8)].map((_, i) => (
+                    <div
+                      key={`dot-${i}`}
+                      className="absolute w-1.5 h-1.5 rounded-full bg-white/30"
+                      style={{
+                        transform: `rotate(${i * 45}deg) translateX(${100}%)`,
+                        animation: `orbit ${5 + i * 0.5}s linear infinite`
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Main button content */}
+              <div className="
+                relative px-6 py-3
+                backdrop-blur-xl
+                overflow-hidden
+                clip-hexagon
+                border border-white/10
+                bg-black/30
+                group-hover:bg-black/40
+                transition-colors duration-300
+              ">
+                {/* Animated gradient lines */}
+                <div className="absolute inset-0 opacity-30">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={`line-${i}`}
+                      className="absolute w-full h-[1px]"
+                      style={{
+                        top: `${30 + i * 20}%`,
+                        background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent)',
+                        transform: `translateX(-100%) rotate(${-15 + i * 15}deg)`,
+                        animation: `slide-right ${3 + i}s linear infinite`
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/* Instance 4 - Particle system */}
+                <div className="absolute inset-0 opacity-30">
+                  {[...Array(20)].map((_, i) => (
+                    <div
+                      key={`particle-${i}`}
+                      className="absolute w-1 h-1 rounded-full bg-white/20"
+                      style={{
+                        top: `${Math.random() * 100}%`,
+                        left: `${Math.random() * 100}%`,
+                        animation: `particle-fade ${2 + Math.random() * 3}s linear infinite`
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/* Button content */}
+                <div className="relative flex items-center gap-3 z-10">
+                  <announcement.buttonIcon className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
+                  <span className="font-medium bg-gradient-to-r from-white via-purple-100 to-blue-100 bg-clip-text text-transparent">
+                    {announcement.buttonText}
+                  </span>
+                </div>
+              </div>
+
+              {/* Outer glow effect */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/0 via-blue-600/20 to-purple-600/0 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 clip-hexagon" />
             </motion.button>
-            
+
             <motion.button
               onClick={() => setShowBanner(false)}
-              className="text-gray-400 hover:text-gray-300 p-2 rounded-full"
+              className="text-gray-400 hover:text-gray-300 p-2 rounded-full relative z-10"
               whileHover={{ 
                 scale: 1.1,
                 rotate: 90 
@@ -617,7 +724,7 @@ export function Hero() {
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                   Niladri Das
                 </h2>
-                <p className="text-lg text-gray-300">ML Engineer & Developer</p>
+                <p className="text-lg text-gray-300">Cloud Environment Automation @Brev.dev</p>
                 <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
                   <span className="flex items-center gap-2">
                     <Cpu className="w-4 h-4 text-purple-400" />
@@ -661,13 +768,6 @@ export function Hero() {
                 <button.icon className="w-5 h-5" />
               </Button>
             ))}
-            <Button
-              onClick={handleOpenCredits}
-              className="bg-white/5 hover:bg-white/10 backdrop-blur-sm p-6 rounded-xl flex items-center justify-center gap-3"
-            >
-              <span className="text-lg">Credits</span>
-              <Code2 className="w-5 h-5" />
-            </Button>
           </motion.div>
         </motion.div>
 

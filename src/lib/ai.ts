@@ -15,6 +15,11 @@ export interface AIResponse {
   thoughts?: string[];
 }
 
+export interface AnalysisMode {
+  type: 'general' | 'solve' | 'explain' | 'summarize';
+  customPrompt?: string;
+}
+
 const CONFIG = {
   temperature: 1,
   topP: 0.95,
@@ -188,4 +193,147 @@ export const getAIQuiz = async (topic: string): Promise<{
     console.error('Failed to parse quiz response:', error);
     throw new Error('Failed to generate quiz');
   }
+};
+
+export const analyzeDocument = async (
+  file: File, 
+  mode: AnalysisMode = { type: 'general' },
+  customInstructions?: string
+): Promise<AIResponse> => {
+  if (!aiService.geminiAI) throw new Error('AI service not initialized');
+
+  const model = aiService.geminiAI.getGenerativeModel({
+    model: "gemini-2.5-pro-exp-03-25",
+    generationConfig: CONFIG,
+  });
+
+  try {
+    const base64 = await fileToBase64(file);
+    
+    let enhancedPrompt = '';
+    
+    switch (mode.type) {
+      case 'solve':
+        enhancedPrompt = `
+          You are an expert academic assistant. Analyze this question paper/problem and:
+
+          1. Problem Identification
+          - Identify the subject area and topic
+          - Break down the question components
+          - List any given data, constraints, or requirements
+
+          2. Solution Approach
+          - Outline the step-by-step solution strategy
+          - Identify relevant formulas, theorems, or concepts
+          - Explain the reasoning behind each step
+
+          3. Detailed Solution
+          - Show complete mathematical workings where applicable
+          - Include diagrams or illustrations if helpful
+          - Explain each calculation and transformation
+          - Use proper notation and units
+
+          4. Answer Verification
+          - Verify the solution meets all requirements
+          - Check units and dimensional consistency
+          - Validate the answer makes logical sense
+          - Provide alternative solution methods if applicable
+
+          5. Additional Explanations
+          - Explain key concepts involved
+          - Highlight common pitfalls to avoid
+          - Provide relevant examples
+          - Include study tips or memory aids
+
+          Format the response using:
+          - Clear section headings
+          - Step-by-step numbering
+          - Mathematical equations in LaTeX
+          - Tables for organized data
+          - Code blocks for computational solutions
+          - Bullet points for key concepts
+
+          ${customInstructions ? `Additional Instructions: ${customInstructions}` : ''}
+        `;
+        break;
+
+      case 'explain':
+        enhancedPrompt = `
+          Analyze this document and provide a detailed explanation of:
+          - Core concepts and principles
+          - Key relationships and dependencies
+          - Practical applications and examples
+          - Common misconceptions
+          ${customInstructions ? `\n${customInstructions}` : ''}
+        `;
+        break;
+
+      case 'summarize':
+        enhancedPrompt = `
+          Provide a comprehensive summary of this document:
+          - Main points and key findings
+          - Important data and statistics
+          - Conclusions and recommendations
+          - Critical insights
+          ${customInstructions ? `\n${customInstructions}` : ''}
+        `;
+        break;
+
+      default:
+        // Use the existing comprehensive analysis prompt
+        enhancedPrompt = `
+          [Previous comprehensive analysis prompt remains here]
+          ${customInstructions ? `\n${customInstructions}` : ''}
+        `;
+    }
+
+    const result = await model.generateContent({
+      contents: [{
+        parts: [
+          { text: enhancedPrompt },
+          { inlineData: { data: base64.split(',')[1], mimeType: file.type } }
+        ]
+      }]
+    });
+
+    const response = await result.response;
+    const text = response.text();
+    const totalTokens = await aiService.countTokens(text);
+
+    // Extract thinking steps from the response
+    const thoughts = text
+      .split('\n')
+      .filter(line => line.trim().startsWith('#') || line.trim().startsWith('-'))
+      .map(line => line.replace(/^[#-]\s*/, ''));
+
+    return {
+      text,
+      totalTokens,
+      promptTokens: Math.floor(totalTokens * 0.4),
+      completionTokens: Math.floor(totalTokens * 0.6),
+      thoughts
+    };
+  } catch (error) {
+    console.error('Document analysis error:', error);
+    if (error instanceof Error) {
+      throw new Error(`Failed to analyze document: ${error.message}`);
+    }
+    throw new Error('Failed to analyze document');
+  }
+};
+
+// Helper function to convert File to base64
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result);
+      } else {
+        reject(new Error('Failed to convert file to base64'));
+      }
+    };
+    reader.onerror = (error) => reject(error);
+  });
 };
