@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.15;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-[#1c2128] text-primary antialiased;
+  }
+}
+
+/* Apply DM Sans to everything */
+@layer base {
+  html {
+    font-family: 'DM Sans', sans-serif;
+    color: #c2d4c2;
+  }
+}
+
+.markdown-content a {
+  @apply text-primary hover:text-primary/80 underline;
+}
+
+/* Copy Prevention Styles */
+* {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* Prevent image dragging */
+img {
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+  pointer-events: none !important;
+}
+
+/* Only allow selection in specific input elements */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+textarea {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: default !important;
+}
+
+
+/* Prose styles */
+.prose {
+  @apply text-primary/80;
+}
+
+.prose strong {
+  @apply text-primary;
+}
+
+.prose code {
+  @apply bg-surface px-1.5 py-0.5 rounded text-xs font-mono text-primary;
+}
+
+.prose pre {
+  @apply bg-surface p-4 rounded-lg overflow-x-auto mb-6;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0;
+}
+
+.prose a {
+  @apply text-primary hover:text-primary/80 no-underline;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-primary/20 pl-4 italic;
+}
