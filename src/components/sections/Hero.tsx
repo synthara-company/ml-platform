@@ -17,6 +17,113 @@ import Particles from 'react-particles';
 import { loadFull } from 'tsparticles';
 import type { Container, Engine } from 'tsparticles-engine';
 
+const GradientBlur = () => (
+  <div className="absolute inset-0 pointer-events-none">
+    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/20 to-purple-500/10 blur-[100px] opacity-50" />
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[100px] animate-pulse" />
+    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-purple-500/20 rounded-full blur-[100px] animate-pulse delay-300" />
+  </div>
+);
+
+const GridPattern = () => (
+  <div className="absolute inset-0 pointer-events-none opacity-30">
+    <div className="absolute inset-0" style={{
+      backgroundImage: `linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px),
+                       linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px)`,
+      backgroundSize: '64px 64px'
+    }} />
+  </div>
+);
+
+const FloatingElements = () => (
+  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    {Array.from({ length: 20 }).map((_, i) => (
+      <motion.div
+        key={i}
+        className="absolute w-1 h-1 bg-white/20 rounded-full"
+        initial={{ 
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight 
+        }}
+        animate={{
+          y: [null, Math.random() * -500],
+          opacity: [0.2, 0]
+        }}
+        transition={{
+          duration: 10 + Math.random() * 10,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      />
+    ))}
+  </div>
+);
+
+const MainHeading = () => (
+  <div className="relative">
+    <motion.h1
+      className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      Machine Learning
+      <br />
+      <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">
+        Made Simple
+      </span>
+    </motion.h1>
+    <motion.p
+      className="mt-6 text-xl text-gray-400 max-w-2xl"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.2 }}
+    >
+      Your interactive guide to mastering machine learning concepts. Built with practical implementation experience and industry best practices.
+    </motion.p>
+  </div>
+);
+
+const ActionButtons = () => (
+  <motion.div
+    className="flex flex-wrap gap-4 mt-8"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay: 0.4 }}
+  >
+    <Button
+      onClick={() => window.open('https://docs.synthara.ai', '_blank')}
+      className="relative group px-8 py-3 bg-white text-black font-medium rounded-lg hover:bg-white/90 transition-all duration-300"
+    >
+      <span className="relative z-10">Get Started</span>
+      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 opacity-0 group-hover:opacity-20 rounded-lg transition-opacity duration-300" />
+    </Button>
+    
+    <Button
+      onClick={() => window.open('https://github.com/synthara-ai', '_blank')}
+      className="px-8 py-3 bg-black/30 backdrop-blur-xl text-white font-medium rounded-lg border border-white/10 hover:bg-black/40 hover:border-white/20 transition-all duration-300"
+    >
+      View on GitHub
+    </Button>
+  </motion.div>
+);
+
+const FeatureCard = ({ icon: Icon, title, description }: {
+  icon: LucideIcon,
+  title: string,
+  description: string
+}) => (
+  <motion.div
+    className="relative group p-6 bg-black/30 backdrop-blur-xl rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300"
+    whileHover={{ y: -5 }}
+  >
+    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300" />
+    <Icon className="w-8 h-8 text-purple-400 mb-4" />
+    <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
+    <p className="text-gray-400">{description}</p>
+  </motion.div>
+);
+
 const CompanySection = () => {
   const techStack = [
     { name: 'React', color: 'purple' },
@@ -364,34 +471,86 @@ const PopularModelsSection = () => (
 
 const TechnologyVisualization = () => {
   const technologies = [
-    { name: 'AI/ML', icon: Brain, color: 'purple' },
-    { name: 'Cloud', icon: Cloud, color: 'blue' },
-    { name: 'Development', icon: Code2, color: 'green' },
-    { name: 'Research', icon: Search, color: 'yellow' },
-    { name: 'Infrastructure', icon: Server, color: 'red' },
-    { name: 'Analytics', icon: TrendingUp, color: 'indigo' }
+    { icon: Brain, color: 'purple', orbit: 0 },
+    { icon: Cloud, color: 'blue', orbit: 1 },
+    { icon: Code2, color: 'green', orbit: 2 },
+    { icon: Search, color: 'yellow', orbit: 1 },
+    { icon: Server, color: 'red', orbit: 2 },
+    { icon: TrendingUp, color: 'indigo', orbit: 0 }
   ];
 
   return (
     <motion.div 
-      className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      className="relative h-[300px] w-full mb-12"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ delay: 0.3 }}
     >
-      {technologies.map((tech) => (
+      {/* Center point */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+                    w-4 h-4 bg-white rounded-full blur-sm" />
+      
+      {/* Orbital paths */}
+      {[0, 1, 2].map((orbit) => (
+        <div
+          key={orbit}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+                     border border-white/10 rounded-full"
+          style={{
+            width: `${(orbit + 1) * 140}px`,
+            height: `${(orbit + 1) * 140}px`
+          }}
+        />
+      ))}
+
+      {/* Technology icons */}
+      {technologies.map((tech, index) => (
         <motion.div
-          key={tech.name}
-          className={`p-6 bg-${tech.color}-500/10 backdrop-blur-sm rounded-xl 
-                     border border-${tech.color}-500/20 hover:border-${tech.color}-500/40 
-                     transition-all duration-300`}
-          whileHover={{ scale: 1.05 }}
+          key={index}
+          className="absolute top-1/2 left-1/2"
+          animate={{
+            rotate: [0, 360],
+          }}
+          transition={{
+            duration: 20 + tech.orbit * 5,
+            repeat: Infinity,
+            ease: "linear"
+          }}
         >
-          <div className={`flex items-center gap-3 text-${tech.color}-400`}>
-            <tech.icon className="w-6 h-6" />
-            <h3 className="text-lg font-semibold">{tech.name}</h3>
-          </div>
+          <motion.div
+            className={`absolute bg-${tech.color}-500/20 backdrop-blur-sm rounded-full 
+                       border border-${tech.color}-500/30 p-3
+                       -translate-x-1/2 -translate-y-1/2`}
+            style={{
+              left: `${(tech.orbit + 1) * 70}px`,
+            }}
+            whileHover={{ scale: 1.2, backgroundColor: `rgba(var(--${tech.color}-rgb), 0.3)` }}
+          >
+            <tech.icon className={`w-6 h-6 text-${tech.color}-400`} />
+            
+            {/* Glow effect */}
+            <div className={`absolute inset-0 bg-${tech.color}-500/20 rounded-full blur-xl`} />
+          </motion.div>
         </motion.div>
+      ))}
+
+      {/* Particle effects */}
+      {Array.from({ length: 20 }).map((_, i) => (
+        <motion.div
+          key={`particle-${i}`}
+          className="absolute top-1/2 left-1/2 w-1 h-1 bg-white/30 rounded-full"
+          animate={{
+            scale: [0, 1, 0],
+            opacity: [0, 1, 0],
+            x: Math.random() * 300 - 150,
+            y: Math.random() * 300 - 150,
+          }}
+          transition={{
+            duration: 2 + Math.random() * 2,
+            repeat: Infinity,
+            delay: Math.random() * 2,
+          }}
+        />
       ))}
     </motion.div>
   );
@@ -641,21 +800,6 @@ const PoweredBySection = () => {
       name: 'Google Cloud', 
       logo: '/google-cloud.svg',
       width: 160
-    },
-    { 
-      name: 'NVIDIA', 
-      logo: '/nvidia.svg',
-      width: 140
-    },
-    { 
-      name: 'Hugging Face', 
-      logo: '/huggingface.svg',
-      width: 150
-    },
-    { 
-      name: 'TensorFlow', 
-      logo: '/tensorflow.svg',
-      width: 140
     }
   ];
 
@@ -683,6 +827,104 @@ const PoweredBySection = () => {
           </div>
         ))}
       </div>
+    </div>
+  );
+};
+
+const AnimatedTitle = () => {
+  const words = [
+    { text: "Machine", color: "from-purple-400" },
+    { text: "Learning", color: "from-blue-400" },
+    { text: "Platform", color: "from-purple-400" }
+  ];
+
+  return (
+    <div className="relative mb-12">
+      {/* Animated background effects */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-full h-32 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 blur-3xl" />
+        <div className="absolute w-24 h-24 bg-blue-500/20 rounded-full blur-2xl animate-pulse" />
+        <div className="absolute w-32 h-32 bg-purple-500/20 rounded-full blur-2xl animate-pulse delay-75" />
+      </div>
+
+      {/* Neural network visualization */}
+      <motion.div 
+        className="absolute inset-0 opacity-20"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.2 }}
+        transition={{ duration: 2 }}
+      >
+        {Array.from({ length: 20 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute bg-white w-1 h-1 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              scale: [0, 1, 0],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </motion.div>
+
+      {/* Animated text */}
+      <motion.div 
+        className="relative flex flex-col items-center justify-center space-y-2 md:space-y-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        {words.map((word, index) => (
+          <motion.div
+            key={index}
+            className="relative"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.2 }}
+          >
+            <motion.h1 
+              className={`text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r 
+                         ${word.color} via-white to-transparent bg-clip-text text-transparent
+                         hover:scale-105 transition-transform duration-300`}
+              whileHover={{ scale: 1.05 }}
+            >
+              {word.text}
+            </motion.h1>
+            
+            {/* Floating particles around text */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none"
+              animate={{
+                background: [
+                  `radial-gradient(circle at 50% 50%, ${word.color.includes('purple') ? '#a855f7' : '#3b82f6'}20 0%, transparent 50%)`,
+                  `radial-gradient(circle at 50% 50%, ${word.color.includes('purple') ? '#a855f7' : '#3b82f6'}10 0%, transparent 70%)`
+                ]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Animated underline */}
+      <motion.div
+        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-0.5 bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400"
+        initial={{ width: "0%" }}
+        animate={{ width: "60%" }}
+        transition={{ duration: 1, delay: 0.5 }}
+      />
     </div>
   );
 };
@@ -1144,9 +1386,7 @@ export function Hero() {
 
         {/* Main Content */}
         <div className="mb-12 space-y-6">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Machine Learning Platform
-          </h1>
+          <AnimatedTitle />
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Your interactive guide to mastering machine learning concepts. Built with practical implementation experience and industry best practices.
           </p>

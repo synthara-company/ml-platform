@@ -13,12 +13,12 @@ export const SimpleBlurForm: React.FC = () => {
     const userData = { name, age };
     localStorage.setItem('userData', JSON.stringify(userData));
     
-    // Dispatch event to trigger cookie consent with debug
-    console.log('Dispatching userDataUpdated event');
-    window.dispatchEvent(new CustomEvent('userDataUpdated'));
-    
-    // Clear any existing cookie consent to ensure it shows
-    localStorage.removeItem('cookieConsent');
+    // Only dispatch event if BOTH userData exists AND cookie consent doesn't exist
+    const cookieConsent = localStorage.getItem('cookieConsent');
+    if (!cookieConsent) {
+      console.log('Dispatching userDataUpdated event');
+      window.dispatchEvent(new CustomEvent('userDataUpdated'));
+    }
     
     console.log('Form submitted:', userData);
   };

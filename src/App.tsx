@@ -310,6 +310,9 @@ function App() {
 
   return (
     <Router>
+      {/* Cookie Consent mounted once at the top level */}
+      <CookieConsent className="z-50" />
+      
       <Routes>
         {/* Legal routes */}
         <Route path="/terms" element={<TermsOfService />} />
@@ -319,7 +322,6 @@ function App() {
         {/* Main content routes - wrapped in MainContent component */}
         <Route path="/*" element={<MainContent />} />
       </Routes>
-      {formSubmitted && <CookieConsent />}
     </Router>
   );
 }

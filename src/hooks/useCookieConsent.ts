@@ -49,25 +49,32 @@ export const useCookieConsent = () => {
   const loadCookiePreferences = async () => {
     try {
       const userId = localStorage.getItem('userId');
-      if (!userId) return;
+      const localConsent = localStorage.getItem('cookieConsent') as CookieConsentType;
+      const localSettings = localStorage.getItem('cookieSettings');
 
-      const response = await fetch(`${API_URL}/cookie-preferences/${userId}`);
-      
-      if (response.ok) {
-        const { data } = await response.json();
-        setCookieSettings(data);
-        setCookieConsent('custom');
+      // If we have local settings, use them first
+      if (localConsent && localSettings) {
+        setCookieConsent(localConsent);
+        setCookieSettings(JSON.parse(localSettings));
+        return;
+      }
+
+      // Only try to fetch from server if we have a userId and no local settings
+      if (userId) {
+        const response = await fetch(`${API_URL}/cookie-preferences/${userId}`);
+        
+        if (response.ok) {
+          const { data } = await response.json();
+          setCookieSettings(data);
+          setCookieConsent('custom');
+          
+          // Store in localStorage to prevent future unnecessary fetches
+          localStorage.setItem('cookieConsent', 'custom');
+          localStorage.setItem('cookieSettings', JSON.stringify(data));
+        }
       }
     } catch (error) {
       console.error('Error loading cookie preferences:', error);
-      // Fall back to local storage
-      const consent = localStorage.getItem('cookieConsent') as CookieConsentType;
-      const settings = localStorage.getItem('cookieSettings');
-      
-      setCookieConsent(consent);
-      if (settings) {
-        setCookieSettings(JSON.parse(settings));
-      }
     }
   };
 

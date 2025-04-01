@@ -38,36 +38,26 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
       const userData = localStorage.getItem('userData');
       const cookieChoice = localStorage.getItem('cookieConsent');
       
-      console.log('Checking consent:', { userData, cookieChoice });
-      
+      // Only show if we have userData AND no cookie choice has been made yet
       if (userData && !cookieChoice) {
-        console.log('Showing cookie consent');
         setIsOpen(true);
+      } else {
+        setIsOpen(false);
       }
     };
 
-    // Event listeners for user data changes
+    // Initial check
+    checkAndShowConsent();
+
+    // Event listener for user data updates
     const handleUserDataUpdate = () => {
-      console.log('userDataUpdated event received');
       checkAndShowConsent();
     };
 
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'userData') {
-        console.log('userData changed in storage');
-        checkAndShowConsent();
-      }
-    };
-
-    // Initial check and event listener setup
-    checkAndShowConsent();
     window.addEventListener('userDataUpdated', handleUserDataUpdate);
-    window.addEventListener('storage', handleStorage);
-
-    // Cleanup event listeners
+    
     return () => {
       window.removeEventListener('userDataUpdated', handleUserDataUpdate);
-      window.removeEventListener('storage', handleStorage);
     };
   }, []);
 
@@ -76,13 +66,21 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
    * Sets maximum cookie permissions and closes banner
    */
   const handleAcceptAll = () => {
-    localStorage.setItem('cookieConsent', 'all');
-    localStorage.setItem('cookieSettings', JSON.stringify({
+    const settings = {
       essential: true,
       analytics: true,
       preferences: true,
-    }));
+    };
+    
+    // Set both cookieConsent and cookieSettings
+    localStorage.setItem('cookieConsent', 'all');
+    localStorage.setItem('cookieSettings', JSON.stringify(settings));
+    
+    // Close the banner
     setIsOpen(false);
+    
+    // Apply the cookies immediately
+    applyConsentedCookies(settings);
   };
 
   /**
