@@ -17,6 +17,8 @@ import { CookiePolicy } from './components/legal/CookiePolicy';
 import { CookieConsent } from './components/CookieConsent';
 import { Footer } from './components/Footer';
 import DocumentAnalysisInterface from './components/sections/DocumentAnalysisInterface';
+import { StocksInterface } from './components/sections/StocksInterface';
+import { GitHubCorner } from './components/GitHubCorner';
 
 // Define a type for user data
 interface UserData {
@@ -251,6 +253,7 @@ const MainContent: React.FC = () => {
           <Route path="/" element={<Hero />} />
           <Route path="/learn" element={<LearningInterface />} />
           <Route path="/research" element={<ResearchInterface />} />
+          <Route path="/stocks" element={<StocksInterface />} />
           <Route path="/test" element={<Test />} />
           <Route path="/og-image" element={<OpenGraphImage />} />
           <Route path="/og-preview" element={<OGPreview />} />
@@ -308,9 +311,12 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Legal routes */}
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/cookies" element={<CookiePolicy />} />
+        
+        {/* Main content routes - wrapped in MainContent component */}
         <Route path="/*" element={<MainContent />} />
       </Routes>
       {formSubmitted && <CookieConsent />}

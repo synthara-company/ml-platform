@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, FileText, Loader2, Brain, Command, 
   Timer, Sparkles, FileImage, FilePdf, FileCode, 
@@ -41,6 +41,12 @@ interface AnalysisMode {
   customPrompt?: string;
 }
 
+interface ProcessStep {
+  title: string;
+  description: string;
+  icon: React.ElementType;
+}
+
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export default function DocumentAnalysisInterface() {
@@ -52,6 +58,7 @@ export default function DocumentAnalysisInterface() {
   const [copied, setCopied] = useState(false);
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>({ type: 'general' });
   const [customInstructions, setCustomInstructions] = useState('');
+  const [currentStep, setCurrentStep] = useState<number>(0);
 
   // Add markdown components configuration
   const markdownComponents = {
@@ -105,14 +112,123 @@ export default function DocumentAnalysisInterface() {
     setError(null);
   };
 
+  const PROCESS_STEPS: ProcessStep[] = [
+    {
+      title: 'Document Processing',
+      description: 'Converting and validating the document',
+      icon: FileText
+    },
+    {
+      title: 'Content Extraction',
+      description: 'Extracting text and structural information',
+      icon: FileCode
+    },
+    {
+      title: 'AI Model Selection',
+      description: 'Choosing the appropriate AI model for analysis',
+      icon: Brain
+    },
+    {
+      title: 'Analysis Pipeline',
+      description: 'Processing content through AI models',
+      icon: Command
+    },
+    {
+      title: 'Response Generation',
+      description: 'Formatting and optimizing the final output',
+      icon: Sparkles
+    }
+  ];
+
+  const ProcessVisualization = () => (
+    <AnimatePresence>
+      {loading && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="mt-8 backdrop-blur-xl bg-black/30 rounded-xl p-6 border border-white/10"
+        >
+          <div className="flex flex-col gap-4">
+            {PROCESS_STEPS.map((step, index) => {
+              const Icon = step.icon;
+              const isActive = index === currentStep;
+              const isPast = index < currentStep;
+
+              return (
+                <motion.div
+                  key={step.title}
+                  className={`flex items-center gap-4 p-4 rounded-lg transition-all duration-300 ${
+                    isActive ? 'bg-white/5' : ''
+                  }`}
+                  initial={false}
+                  animate={{
+                    opacity: isPast ? 0.5 : 1,
+                    x: isActive ? 10 : 0
+                  }}
+                >
+                  <div className={`p-2 rounded-lg ${
+                    isActive ? 'bg-purple-500/20 text-purple-400' :
+                    isPast ? 'bg-green-500/20 text-green-400' :
+                    'bg-white/5 text-white/40'
+                  }`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className={`font-medium ${
+                      isActive ? 'text-white' :
+                      isPast ? 'text-green-400' :
+                      'text-white/40'
+                    }`}>
+                      {step.title}
+                    </h4>
+                    <p className="text-sm text-white/60">{step.description}</p>
+                  </div>
+                  {isPast && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="ml-auto text-green-400"
+                    >
+                      <Check className="w-5 h-5" />
+                    </motion.div>
+                  )}
+                  {isActive && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="ml-auto text-purple-400"
+                    >
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    </motion.div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
   const handleAnalysis = async () => {
     if (!file || loading) return;
 
     setLoading(true);
     setError(null);
     setResult(null);
+    
+    // Reset and start the process visualization
+    setCurrentStep(0);
+    const stepDuration = 1000; // 1 second per step
 
     try {
+      // Simulate process steps
+      for (let i = 0; i < PROCESS_STEPS.length - 1; i++) {
+        await new Promise(resolve => setTimeout(resolve, stepDuration));
+        setCurrentStep(i + 1);
+      }
+
       const analysisResult = await analyzeDocument(file, analysisMode, customInstructions);
       
       setResult({
@@ -132,6 +248,7 @@ export default function DocumentAnalysisInterface() {
       setError(err instanceof Error ? err.message : 'Failed to analyze document');
     } finally {
       setLoading(false);
+      setCurrentStep(0);
     }
   };
 
@@ -367,6 +484,9 @@ export default function DocumentAnalysisInterface() {
             </motion.div>
           )}
         </motion.div>
+
+        {/* Process Visualization */}
+        <ProcessVisualization />
 
         {/* Error Message */}
         {error && (

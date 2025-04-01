@@ -1,11 +1,26 @@
+/**
+ * Cookie Policy Router
+ * Handles all cookie-related API endpoints including:
+ * - Getting/Setting cookie preferences
+ * - Managing user consent
+ * - Admin operations
+ */
+
 import express from 'express';
-import cors from 'cors';
 import { z } from 'zod';
-import { CookieSettings, CookieResponse } from '../types/cookies';
+import { CookieSettings } from '../types/cookies';
 
 const cookiePolicyRouter = express.Router();
 
-// Cookie settings schema
+/**
+ * Cookie Settings Schema
+ * Validates incoming cookie preference data
+ * @property {boolean} essential - Required cookies that cannot be disabled
+ * @property {boolean} analytics - Analytics and tracking cookies
+ * @property {boolean} preferences - User preference cookies
+ * @property {string} userId - Unique identifier for the user
+ * @property {number} timestamp - When preferences were last updated
+ */
 const CookieSettingsSchema = z.object({
   essential: z.boolean(),
   analytics: z.boolean(),
@@ -17,7 +32,11 @@ const CookieSettingsSchema = z.object({
 // In-memory store (replace with database in production)
 const cookiePreferences = new Map<string, CookieSettings>();
 
-// Get all cookie preferences for admin
+/**
+ * GET /cookie-preferences
+ * Admin endpoint to retrieve all cookie preferences
+ * @returns {Object} JSON response with all user preferences
+ */
 cookiePolicyRouter.get('/cookie-preferences', async (_req, res) => {
   const allPreferences = Array.from(cookiePreferences.values());
   res.status(200).json({
@@ -26,7 +45,12 @@ cookiePolicyRouter.get('/cookie-preferences', async (_req, res) => {
   });
 });
 
-// Save cookie preferences
+/**
+ * POST /cookie-preferences
+ * Save or update user cookie preferences
+ * @body {CookieSettings} Cookie preference settings
+ * @returns {Object} Success/failure response
+ */
 cookiePolicyRouter.post('/cookie-preferences', async (req, res) => {
   try {
     const settings = CookieSettingsSchema.parse({

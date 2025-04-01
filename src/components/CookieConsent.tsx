@@ -1,3 +1,9 @@
+/**
+ * CookieConsent Component
+ * Displays cookie consent banner and manages user preferences
+ * Implements EU GDPR compliance for cookie consent
+ */
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, X, Settings, Check, Ban, ChevronLeft } from 'lucide-react';
@@ -9,7 +15,11 @@ interface CookieSettings {
   preferences: boolean;
 }
 
-export const CookieConsent: React.FC = () => {
+interface CookieConsentProps {
+  className?: string;
+}
+
+export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showCustomize, setShowCustomize] = useState(false);
   const [showPolicy, setShowPolicy] = useState(false);
@@ -19,6 +29,10 @@ export const CookieConsent: React.FC = () => {
     preferences: true,
   });
 
+  /**
+   * Checks if cookie consent is needed and shows banner accordingly
+   * Triggered on mount and user data updates
+   */
   useEffect(() => {
     const checkAndShowConsent = () => {
       const userData = localStorage.getItem('userData');
@@ -32,17 +46,12 @@ export const CookieConsent: React.FC = () => {
       }
     };
 
-    // Initial check
-    checkAndShowConsent();
-
+    // Event listeners for user data changes
     const handleUserDataUpdate = () => {
       console.log('userDataUpdated event received');
       checkAndShowConsent();
     };
 
-    window.addEventListener('userDataUpdated', handleUserDataUpdate);
-    
-    // Storage event listener
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'userData') {
         console.log('userData changed in storage');
@@ -50,14 +59,22 @@ export const CookieConsent: React.FC = () => {
       }
     };
 
+    // Initial check and event listener setup
+    checkAndShowConsent();
+    window.addEventListener('userDataUpdated', handleUserDataUpdate);
     window.addEventListener('storage', handleStorage);
 
+    // Cleanup event listeners
     return () => {
       window.removeEventListener('userDataUpdated', handleUserDataUpdate);
       window.removeEventListener('storage', handleStorage);
     };
   }, []);
 
+  /**
+   * Handles user accepting all cookies
+   * Sets maximum cookie permissions and closes banner
+   */
   const handleAcceptAll = () => {
     localStorage.setItem('cookieConsent', 'all');
     localStorage.setItem('cookieSettings', JSON.stringify({
@@ -68,6 +85,10 @@ export const CookieConsent: React.FC = () => {
     setIsOpen(false);
   };
 
+  /**
+   * Handles user rejecting optional cookies
+   * Sets minimum required cookies and closes banner
+   */
   const handleRejectAll = () => {
     localStorage.setItem('cookieConsent', 'essential');
     localStorage.setItem('cookieSettings', JSON.stringify({

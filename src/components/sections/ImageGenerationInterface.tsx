@@ -6,30 +6,72 @@ import { useNavigate } from 'react-router-dom';
 import { AIProviderSwitch } from '../AIProviderSwitch';
 import { generateImage } from '@/lib/imageGeneration';
 
-const PROMPT_EXAMPLES = [
+const PHOTOREALISTIC_EXAMPLES = [
   {
-    title: "Peaceful Garden",
-    prompt: "A peaceful garden bathed in the warm glow of the morning sun. A lone figure, dressed in simple yet elegant clothes, tends to the vibrant flowers, their hands gently brushing against the petals. Butterflies flutter around, and a small fountain trickles softly in the background. Lush green vines climb an old wooden trellis, while a cherry blossom tree in full bloom casts delicate pink petals into the breeze. The scene exudes tranquility, harmony, and a deep connection between humans and nature."
+    title: "AI Research Lab",
+    prompt: `Modern AI research laboratory, wide angle view:
+    - Clean white and glass interior
+    - Blue LED ambient lighting
+    - Multiple transparent display screens
+    - Scientists at workstations
+    - Holographic data visualizations
+    - Professional photography style
+    - Dramatic lighting, sharp focus`
   },
   {
-    title: "Space Launch",
-    prompt: "A sleek, futuristic rocket poised on a high-tech launchpad beneath a vast starry sky. The rocket's metallic body gleams under powerful floodlights, with intricate details hinting at advanced engineering. As it prepares for takeoff, billowing clouds of steam and fire create a dramatic display, while in the background, a vibrant aurora illuminates the horizon and distant planets hint at unexplored frontiers. The scene captures the excitement and mystery of space exploration."
+    title: "Tech Startup Office",
+    prompt: `Modern tech startup office space:
+    - Open plan workspace
+    - Floor-to-ceiling windows
+    - Developers at standing desks
+    - Multiple monitor setups
+    - Neon company logo
+    - Plants and natural elements
+    - Evening golden hour lighting`
   },
   {
-    title: "Cyberpunk City",
-    prompt: "A bustling cyberpunk metropolis at night, illuminated by countless neon signs and holographic advertisements. Towering skyscrapers pierce through low-hanging clouds, their surfaces covered in LED displays. Flying vehicles weave between buildings while street-level vendors sell glowing street food. Rain-slicked streets reflect the vibrant colors above, creating a mirror world of light and shadow. Cybernetic citizens walk past with glowing augmentations, their forms silhouetted against the technicolor backdrop."
+    title: "Data Center",
+    prompt: `High-tech data center interior:
+    - Rows of server racks
+    - Blue LED status lights
+    - Glass-walled control room
+    - Network cables management
+    - Technicians working
+    - Cool color temperature
+    - Dramatic spotlighting`
   },
   {
-    title: "Ancient Library",
-    prompt: "An vast ancient library stretching endlessly in all directions. Towering wooden bookshelves reach impossibly high, connected by ornate spiral staircases and floating platforms. Rays of golden sunlight pierce through stained glass windows, illuminating dancing dust particles. Ancient tomes and scrolls fill every shelf, some emanating a subtle magical glow. Floating orbs of light serve as guides through the labyrinthine corridors of knowledge."
+    title: "VR Development Studio",
+    prompt: `Virtual reality development studio:
+    - People wearing VR headsets
+    - Large motion capture space
+    - Development workstations
+    - 3D character models on screens
+    - Modern industrial design
+    - Purple and blue accent lighting
+    - Clean, minimal aesthetic`
   },
   {
-    title: "Deep Sea Discovery",
-    prompt: "A bioluminescent deep sea scene featuring an advanced submarine discovering an ancient underwater ruin. Strange and beautiful sea creatures with natural light displays swim around the structure. The submarine's powerful lights reveal intricate carvings and mysterious symbols on the ancient stonework. Gentle currents move translucent sea life while particles float in the beams of light, creating an otherworldly atmosphere in the depths."
+    title: "Drone Testing Facility",
+    prompt: `Indoor drone testing facility:
+    - Flying drones with LED lights
+    - Safety netting systems
+    - Control station with monitors
+    - Engineers with tablets
+    - High ceiling warehouse style
+    - Dynamic lighting
+    - Industrial modern design`
   },
   {
-    title: "Quantum Laboratory",
-    prompt: "A cutting-edge quantum computing laboratory with holographic displays showing complex mathematical equations and atomic structures. Sleek quantum processors emit a soft blue glow while suspended in electromagnetic fields. Scientists in clean room suits work with advanced instruments while 3D visualizations of quantum phenomena float in the air. The scene combines ultra-modern technology with the mysterious nature of quantum mechanics, rendered in a cool color palette of blues and silvers."
+    title: "Innovation Hub",
+    prompt: `Technology innovation hub:
+    - Collaborative workspace
+    - Interactive touch walls
+    - 3D printers in action
+    - Modern meeting pods
+    - People brainstorming
+    - Warm accent lighting
+    - Contemporary design`
   }
 ];
 
@@ -118,27 +160,47 @@ export function ImageGenerationInterface() {
   }, [prompt]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-[#0f1115] to-black text-white">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px] animate-[gradient_3s_linear_infinite]" />
-      
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 relative">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Animated background patterns */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {/* Grid pattern animation */}
+        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px] animate-[gradient_3s_linear_infinite] opacity-20" />
+        
+        {/* Radial gradient pulse */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(68,68,68,0.2),transparent)] animate-pulse" />
+        
+        {/* Decorative blurred circles */}
+        <div className="absolute top-20 right-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+        
+        {/* Additional decorative elements */}
+        <div className="absolute top-1/4 left-1/3 w-48 h-48 bg-pink-500/10 rounded-full blur-2xl animate-pulse" />
+        <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-indigo-500/10 rounded-full blur-2xl animate-pulse" />
+      </div>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-safe pb-4 sm:py-8 relative">
+        {/* Enhanced Header with glassmorphism */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 backdrop-blur-lg bg-white/5 p-6 rounded-xl border border-white/10 shadow-lg mt-[calc(2rem+env(safe-area-inset-top))] sm:mt-2"
+        >
           <Button
             variant="ghost"
-            className="hover:bg-white/10 text-white backdrop-blur-sm w-full sm:w-auto transition-all duration-300"
+            className="hover:bg-white/10 text-white group transition-all duration-300"
             onClick={() => navigate('/')}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             Back to Home
           </Button>
           <AIProviderSwitch />
-        </div>
+        </motion.div>
 
+        {/* Main Content Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto"
+          className="backdrop-blur-xl bg-white/5 rounded-2xl p-8 shadow-2xl border border-white/10"
         >
           <div className="relative backdrop-blur-xl bg-white/5 p-8 rounded-2xl border border-white/10 shadow-2xl">
             <div className="flex flex-col sm:flex-row gap-6 mb-8">
@@ -202,7 +264,7 @@ export function ImageGenerationInterface() {
                 <div className="space-y-6">
                   <p className="text-sm text-gray-400 font-medium">Example Prompts:</p>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    {PROMPT_EXAMPLES.map((example, index) => (
+                    {PHOTOREALISTIC_EXAMPLES.map((example, index) => (
                       <div
                         key={index}
                         onClick={() => handleExampleClick(example.prompt)}

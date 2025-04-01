@@ -1,15 +1,103 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
   Server, Database, Cloud, Network, Code2, 
   GitBranch, Lock, Globe, MessageSquare, Container,
   Brain, Cpu, Search, Microscope, Image as ImageIcon,
-  ArrowLeft
+  ArrowLeft, FileText, Loader2, Command, Timer, Sparkles, Check
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { getAIExplanation, type AIResponse } from '@/lib/ai';
 import ReactMarkdown from 'react-markdown';
+
+interface ProcessStep {
+  title: string;
+  description: string;
+  icon: React.ElementType;
+}
+
+const HeaderGraphics = () => (
+  <div className="relative w-full h-[300px] mb-12">
+    <div className="absolute inset-0 flex items-center justify-center">
+      {/* Background gradients */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
+      
+      {/* Floating icons with animations */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ 
+          opacity: [0.5, 1, 0.5], 
+          y: [0, -10, 0],
+          rotate: [0, 5, -5, 0]
+        }}
+        transition={{ 
+          duration: 5,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute top-1/4 left-1/4"
+      >
+        <Server className="w-12 h-12 text-purple-400" />
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ 
+          opacity: [0.5, 1, 0.5], 
+          y: [0, 10, 0],
+          rotate: [0, -5, 5, 0]
+        }}
+        transition={{ 
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 0.5
+        }}
+        className="absolute top-1/3 right-1/3"
+      >
+        <Cloud className="w-10 h-10 text-blue-400" />
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ 
+          opacity: [0.5, 1, 0.5], 
+          y: [0, -15, 0],
+          rotate: [0, 10, -10, 0]
+        }}
+        transition={{ 
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1
+        }}
+        className="absolute bottom-1/3 left-1/3"
+      >
+        <Brain className="w-14 h-14 text-purple-400" />
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ 
+          opacity: [0.5, 1, 0.5], 
+          y: [0, 15, 0],
+          rotate: [0, -8, 8, 0]
+        }}
+        transition={{ 
+          duration: 5.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1.5
+        }}
+        className="absolute bottom-1/4 right-1/4"
+      >
+        <Code2 className="w-11 h-11 text-blue-400" />
+      </motion.div>
+    </div>
+  </div>
+);
 
 const topics = [
   {
@@ -385,25 +473,136 @@ const serviceDetails = {
   }
 };
 
+const PROCESS_STEPS: ProcessStep[] = [
+  {
+    title: 'Service Discovery',
+    description: 'Locating and validating the requested microservice',
+    icon: Search
+  },
+  {
+    title: 'Load Balancing',
+    description: 'Distributing the request across available instances',
+    icon: Network
+  },
+  {
+    title: 'Authentication',
+    description: 'Verifying access credentials and permissions',
+    icon: Lock
+  },
+  {
+    title: 'Request Processing',
+    description: 'Processing the request through the service pipeline',
+    icon: Command
+  },
+  {
+    title: 'Response Generation',
+    description: 'Formatting and optimizing the service response',
+    icon: Sparkles
+  }
+];
+
 export function MicroservicesInterface() {
   const navigate = useNavigate();
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [selectedConcept, setSelectedConcept] = useState<string | null>(null);
   const [explanation, setExplanation] = useState<AIResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState<number>(0);
+
+  const ProcessVisualization = () => (
+    <AnimatePresence>
+      {loading && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="mt-8 backdrop-blur-xl bg-black/30 rounded-xl p-6 border border-purple-500/20"
+        >
+          <div className="flex flex-col gap-4">
+            {PROCESS_STEPS.map((step, index) => {
+              const Icon = step.icon;
+              const isActive = index === currentStep;
+              const isPast = index < currentStep;
+
+              return (
+                <motion.div
+                  key={step.title}
+                  className={`flex items-center gap-4 p-4 rounded-lg transition-all duration-300 ${
+                    isActive ? 'bg-white/5' : ''
+                  }`}
+                  initial={false}
+                  animate={{
+                    opacity: isPast ? 0.5 : 1,
+                    x: isActive ? 10 : 0
+                  }}
+                >
+                  <div className={`p-2 rounded-lg ${
+                    isActive ? 'bg-purple-500/20 text-purple-400' :
+                    isPast ? 'bg-green-500/20 text-green-400' :
+                    'bg-white/5 text-white/40'
+                  }`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className={`font-medium ${
+                      isActive ? 'text-white' :
+                      isPast ? 'text-green-400' :
+                      'text-white/40'
+                    }`}>
+                      {step.title}
+                    </h4>
+                    <p className="text-sm text-white/60">{step.description}</p>
+                  </div>
+                  {isPast && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="ml-auto text-green-400"
+                    >
+                      <Check className="w-5 h-5" />
+                    </motion.div>
+                  )}
+                  {isActive && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="ml-auto text-purple-400"
+                    >
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    </motion.div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 
   const handleConceptClick = async (topic: string, concept: string) => {
     setLoading(true);
     setSelectedTopic(topic);
     setSelectedConcept(concept);
     
+    // Reset and start the process visualization
+    setCurrentStep(0);
+    const stepDuration = 1000; // 1 second per step
+    
     try {
+      // Simulate process steps
+      for (let i = 0; i < PROCESS_STEPS.length - 1; i++) {
+        await new Promise(resolve => setTimeout(resolve, stepDuration));
+        setCurrentStep(i + 1);
+      }
+
       const response = await getAIExplanation('Microservices', concept);
       setExplanation(response);
     } catch (error) {
       console.error('Error fetching explanation:', error);
     } finally {
       setLoading(false);
+      setCurrentStep(0);
     }
   };
 
@@ -489,96 +688,97 @@ export function MicroservicesInterface() {
   };
 
   return (
-    <div className="min-h-screen p-6 space-y-8">
-      {/* Back Button */}
-      <Button
-        onClick={() => navigate('/')}
-        variant="ghost"
-        className="text-gray-400 hover:text-white flex items-center gap-2"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Home
-      </Button>
-
-      {/* Header Section */}
-      <div className="relative rounded-2xl overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20" />
-          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        </div>
-        
-        <div className="relative px-8 py-12 text-center">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-4">
-            Explore Our Microservices Architecture
-          </h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Discover our comprehensive suite of microservices, from core infrastructure to cutting-edge AI capabilities. 
-            Select any topic to learn more about specific services and implementations.
-          </p>
-        </div>
-      </div>
-
-      {/* Topics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {topics.map((topic) => (
-          <motion.div
-            key={topic.id}
-            whileHover={{ scale: 1.02 }}
-            className="group bg-surface/30 backdrop-blur-sm p-6 rounded-xl border border-purple-500/20 
-                     hover:border-purple-500/40 transition-all duration-300"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg
-                            group-hover:from-purple-500/30 group-hover:to-blue-500/30 transition-colors">
-                <topic.icon className="w-5 h-5 text-purple-400" />
-              </div>
-              <h2 className="text-xl font-semibold text-white">
-                {topic.title}
-              </h2>
-            </div>
-            
-            <p className="text-gray-400 mb-4">{topic.content}</p>
-            
-            <div className="space-y-2">
-              {topic.concepts.map((concept) => (
-                <button
-                  key={concept}
-                  onClick={() => handleConceptClick(topic.title, concept)}
-                  className="w-full text-left px-4 py-2 rounded-lg text-gray-300
-                           hover:bg-white/5 transition-colors flex items-center gap-2"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                  {concept}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Service Details Section */}
-      {selectedConcept && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-8 bg-surface/30 backdrop-blur-sm p-8 rounded-xl border border-purple-500/20"
+    <div className="min-h-screen bg-background p-6">
+      <HeaderGraphics />
+      <div className="max-w-8xl mx-auto">
+        {/* Back Button */}
+        <Button
+          onClick={() => navigate('/')}
+          variant="ghost"
+          className="text-gray-400 hover:text-white flex items-center gap-2"
         >
-          {loading ? (
-            <div className="flex items-center justify-center gap-3 text-gray-400 py-12">
-              <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-              Loading explanation...
-            </div>
-          ) : (
-            <>
-              {renderServiceDetails(selectedConcept)}
-              <div className="prose prose-invert max-w-none mt-8">
-                <ReactMarkdown>{explanation?.text || ''}</ReactMarkdown>
+          <ArrowLeft className="w-4 h-4" />
+          Back to Home
+        </Button>
+
+        {/* Header Section */}
+        <div className="relative rounded-2xl overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+          </div>
+          
+          <div className="relative px-8 py-12 text-center">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-4">
+              Explore Our Microservices Architecture
+            </h1>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Discover our comprehensive suite of microservices, from core infrastructure to cutting-edge AI capabilities. 
+              Select any topic to learn more about specific services and implementations.
+            </p>
+          </div>
+        </div>
+
+        {/* Topics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {topics.map((topic) => (
+            <motion.div
+              key={topic.id}
+              whileHover={{ scale: 1.02 }}
+              className="group bg-surface/30 backdrop-blur-sm p-6 rounded-xl border border-purple-500/20 
+                       hover:border-purple-500/40 transition-all duration-300"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg
+                              group-hover:from-purple-500/30 group-hover:to-blue-500/30 transition-colors">
+                  <topic.icon className="w-5 h-5 text-purple-400" />
+                </div>
+                <h2 className="text-xl font-semibold text-white">
+                  {topic.title}
+                </h2>
               </div>
-            </>
-          )}
-        </motion.div>
-      )}
+              
+              <p className="text-gray-400 mb-4">{topic.content}</p>
+              
+              <div className="space-y-2">
+                {topic.concepts.map((concept) => (
+                  <button
+                    key={concept}
+                    onClick={() => handleConceptClick(topic.title, concept)}
+                    className="w-full text-left px-4 py-2 rounded-lg text-gray-300
+                             hover:bg-white/5 transition-colors flex items-center gap-2"
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                    {concept}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Process Visualization */}
+        <ProcessVisualization />
+
+        {/* Service Details Section */}
+        {selectedConcept && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 bg-surface/30 backdrop-blur-sm p-8 rounded-xl border border-purple-500/20"
+          >
+            {!loading && (
+              <>
+                {renderServiceDetails(selectedConcept)}
+                <div className="prose prose-invert max-w-none mt-8">
+                  <ReactMarkdown>{explanation?.text || ''}</ReactMarkdown>
+                </div>
+              </>
+            )}
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }

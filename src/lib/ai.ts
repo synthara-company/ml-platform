@@ -28,6 +28,11 @@ const CONFIG = {
   responseMimeType: "text/plain",
 };
 
+/**
+ * AI Service Singleton Class
+ * Handles all AI-related operations including token counting and response generation
+ * Uses Gemini AI as the underlying model
+ */
 class AIService {
   private static instance: AIService;
   private rateLimitQueue: Array<() => Promise<any>> = [];
@@ -77,6 +82,10 @@ class AIService {
     });
   }
 
+  /**
+   * Get the singleton instance of AIService
+   * Creates a new instance if one doesn't exist
+   */
   public static getInstance(): AIService {
     if (!AIService.instance) {
       AIService.instance = new AIService();
@@ -88,6 +97,12 @@ class AIService {
     return this.currentProvider;
   }
 
+  /**
+   * Counts the number of tokens in the provided text
+   * @param text - The input text to count tokens for
+   * @returns Promise<number> - Total number of tokens
+   * @throws Error if AI service is not initialized
+   */
   public async countTokens(text: string): Promise<number> {
     if (!this.geminiAI) throw new Error('AI service not initialized');
     
@@ -99,6 +114,12 @@ class AIService {
     return result.totalTokens;
   }
 
+  /**
+   * Generates an AI response for the given prompt
+   * Implements rate limiting and error handling
+   * @param prompt - The input prompt for the AI
+   * @returns Promise<AIResponse> - Structured response including text and token counts
+   */
   public async getResponse(prompt: string): Promise<AIResponse> {
     return new Promise((resolve, reject) => {
       this.rateLimitQueue.push(async () => {

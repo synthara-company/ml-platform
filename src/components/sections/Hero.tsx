@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
   ChevronRight, Search, Cpu, Github, Twitter, 
   Linkedin, Mail, BookOpen, Ship, Cloud, Code2, 
   Image, Copyright, X, Brain, MessageSquare, Server,
-  Users, FileText
+  Users, FileText, TrendingUp, ExternalLink 
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { CreditsModal } from '../ui/CreditsModal';
@@ -13,6 +13,9 @@ import { HiringForm } from '../ui/HiringForm';
 import { generateHeroImage } from '@/lib/imageGeneration';
 import { SystemRequirements } from '../SystemRequirements';
 import { SystemRequirementsChecker } from '../SystemRequirementsChecker';
+import Particles from 'react-particles';
+import { loadFull } from 'tsparticles';
+import type { Container, Engine } from 'tsparticles-engine';
 
 const CompanySection = () => {
   const techStack = [
@@ -139,6 +142,116 @@ const CompanySection = () => {
   );
 };
 
+const InteractiveTechWeb = () => {
+  const [hoveredTech, setHoveredTech] = useState<string | null>(null);
+  
+  const techNodes = [
+    { id: 'ai', label: 'AI/ML', icon: Brain, x: 50, y: 50, color: 'purple' },
+    { id: 'cloud', label: 'Cloud', icon: Cloud, x: 75, y: 25, color: 'blue' },
+    { id: 'dev', label: 'Development', icon: Code2, x: 25, y: 75, color: 'green' },
+    { id: 'research', label: 'Research', icon: Search, x: 75, y: 75, color: 'yellow' },
+    { id: 'infra', label: 'Infrastructure', icon: Server, x: 25, y: 25, color: 'red' }
+  ];
+
+  // Memoize the connections to prevent unnecessary re-renders
+  const connections = useMemo(() => 
+    techNodes.flatMap((node1) => 
+      techNodes
+        .filter(node2 => node1.id !== node2.id)
+        .map(node2 => ({
+          id: `${node1.id}-${node2.id}`,
+          source: node1,
+          target: node2
+        }))
+    ),
+    []
+  );
+
+  return (
+    <motion.div 
+      className="relative h-[400px] mb-12 backdrop-blur-xl bg-black/20 rounded-xl border border-white/10 overflow-hidden"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      {/* Connection Lines */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none">
+        <g>
+          {connections.map(({ id, source, target }) => (
+            <motion.line
+              key={id}
+              x1={`${source.x}%`}
+              y1={`${source.y}%`}
+              x2={`${target.x}%`}
+              y2={`${target.y}%`}
+              initial={{ pathLength: 0 }}
+              animate={{ 
+                pathLength: 1,
+                stroke: hoveredTech ? 
+                  (hoveredTech === source.id || hoveredTech === target.id ? 
+                    'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.05)') : 
+                  'rgba(255,255,255,0.1)'
+              }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              strokeWidth="1"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+        </g>
+      </svg>
+
+      {/* Tech Nodes */}
+      {techNodes.map((node) => (
+        <motion.div
+          key={node.id}
+          className="absolute transform -translate-x-1/2 -translate-y-1/2"
+          style={{ left: `${node.x}%`, top: `${node.y}%` }}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <motion.div
+            className={`relative p-4 rounded-full backdrop-blur-md
+              ${hoveredTech === node.id ? 
+                `bg-${node.color}-500/30 border-${node.color}-400/50` : 
+                'bg-white/5 border-white/10'} 
+              border transition-colors duration-300 cursor-pointer`}
+            whileHover={{ scale: 1.2 }}
+            onHoverStart={() => setHoveredTech(node.id)}
+            onHoverEnd={() => setHoveredTech(null)}
+          >
+            <node.icon 
+              className={`w-6 h-6 ${
+                hoveredTech === node.id ? 
+                `text-${node.color}-400` : 
+                'text-white'
+              }`} 
+            />
+            
+            {/* Label */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ 
+                opacity: hoveredTech === node.id ? 1 : 0,
+                y: hoveredTech === node.id ? 0 : 10
+              }}
+              className="absolute top-full left-1/2 -translate-x-1/2 mt-2
+                whitespace-nowrap text-sm font-medium bg-black/90 
+                text-white px-3 py-1.5 rounded-full"
+            >
+              {node.label}
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      ))}
+
+      {/* Background Gradient Effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 pointer-events-none" />
+    </motion.div>
+  );
+};
+
 const popularModels = [
   { 
     label: 'Llama 3.3 Nemotron Super', 
@@ -249,6 +362,331 @@ const PopularModelsSection = () => (
   </div>
 );
 
+const TechnologyVisualization = () => {
+  const technologies = [
+    { name: 'AI/ML', icon: Brain, color: 'purple' },
+    { name: 'Cloud', icon: Cloud, color: 'blue' },
+    { name: 'Development', icon: Code2, color: 'green' },
+    { name: 'Research', icon: Search, color: 'yellow' },
+    { name: 'Infrastructure', icon: Server, color: 'red' },
+    { name: 'Analytics', icon: TrendingUp, color: 'indigo' }
+  ];
+
+  return (
+    <motion.div 
+      className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+    >
+      {technologies.map((tech) => (
+        <motion.div
+          key={tech.name}
+          className={`p-6 bg-${tech.color}-500/10 backdrop-blur-sm rounded-xl 
+                     border border-${tech.color}-500/20 hover:border-${tech.color}-500/40 
+                     transition-all duration-300`}
+          whileHover={{ scale: 1.05 }}
+        >
+          <div className={`flex items-center gap-3 text-${tech.color}-400`}>
+            <tech.icon className="w-6 h-6" />
+            <h3 className="text-lg font-semibold">{tech.name}</h3>
+          </div>
+        </motion.div>
+      ))}
+    </motion.div>
+  );
+};
+
+const ParticleBackground = () => {
+  const particlesInit = async (engine: Engine) => {
+    await loadFull(engine);
+  };
+
+  return (
+    <Particles
+      className="absolute inset-0"
+      id="tsparticles"
+      init={particlesInit}
+      options={{
+        background: {
+          opacity: 0
+        },
+        particles: {
+          number: { value: 50, density: { enable: true, value_area: 800 } },
+          color: { 
+            value: ["#8b5cf6", "#3b82f6", "#06b6d4", "#10b981"] 
+          },
+          shape: {
+            type: ["circle", "triangle", "polygon"],
+            polygon: { nb_sides: 6 }
+          },
+          opacity: {
+            value: 0.8,
+            random: true,
+            anim: {
+              enable: true,
+              speed: 1,
+              opacity_min: 0.1,
+              sync: false
+            }
+          },
+          size: {
+            value: 4,
+            random: true,
+            anim: {
+              enable: true,
+              speed: 2,
+              size_min: 0.1,
+              sync: false
+            }
+          },
+          line_linked: {
+            enable: true,
+            distance: 150,
+            color: "#8b5cf6",
+            opacity: 0.4,
+            width: 1,
+            triangles: {
+              enable: true,
+              opacity: 0.1,
+              color: "#3b82f6"
+            }
+          },
+          move: {
+            enable: true,
+            speed: 3,
+            direction: "none",
+            random: true,
+            straight: false,
+            out_mode: "bounce",
+            attract: {
+              enable: true,
+              rotateX: 600,
+              rotateY: 1200
+            }
+          }
+        },
+        interactivity: {
+          detect_on: "canvas",
+          events: {
+            onhover: {
+              enable: true,
+              mode: ["grab", "bubble"]
+            },
+            onclick: {
+              enable: true,
+              mode: "push"
+            },
+            resize: true
+          },
+          modes: {
+            grab: {
+              distance: 200,
+              line_linked: {
+                opacity: 0.8
+              }
+            },
+            bubble: {
+              distance: 200,
+              size: 12,
+              duration: 2,
+              opacity: 0.8,
+              speed: 3
+            },
+            push: {
+              particles_nb: 4
+            }
+          }
+        }
+      }}
+    />
+  );
+};
+
+const AnimatedGrid = () => {
+  return (
+    <div className="absolute inset-0 overflow-hidden opacity-30">
+      <div className="relative w-full h-full">
+        {/* Horizontal lines */}
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={`h-${i}`}
+            className="absolute w-full h-[2px]"
+            style={{
+              top: `${i * 5}%`,
+              background: `linear-gradient(90deg, 
+                transparent 0%, 
+                ${i % 2 ? '#8b5cf6' : '#3b82f6'} 50%, 
+                transparent 100%)`,
+              animation: `pulseWidth ${3 + i % 4}s ease-in-out infinite`,
+              opacity: 0.3
+            }}
+          />
+        ))}
+        {/* Vertical lines */}
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={`v-${i}`}
+            className="absolute h-full w-[2px]"
+            style={{
+              left: `${i * 5}%`,
+              background: `linear-gradient(180deg, 
+                transparent 0%, 
+                ${i % 2 ? '#06b6d4' : '#10b981'} 50%, 
+                transparent 100%)`,
+              animation: `pulseHeight ${4 + i % 3}s ease-in-out infinite`,
+              opacity: 0.3
+            }}
+          />
+        ))}
+        {/* Glowing orbs at intersections */}
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div
+            key={`orb-${i}`}
+            className="absolute w-4 h-4 rounded-full"
+            style={{
+              left: `${20 + i * 12}%`,
+              top: `${30 + (i % 3) * 15}%`,
+              background: `radial-gradient(circle, 
+                ${i % 2 ? '#8b5cf6' : '#3b82f6'} 0%, 
+                transparent 70%)`,
+              animation: `float ${5 + i}s ease-in-out infinite`,
+              filter: 'blur(4px)'
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const FloatingTechStack = () => {
+  const technologies = [
+    { name: 'React', color: 'blue', icon: '⚛️' },
+    { name: 'TypeScript', color: 'cyan', icon: '📘' },
+    { name: 'Python', color: 'yellow', icon: '🐍' },
+    { name: 'TensorFlow', color: 'orange', icon: '🧠' },
+    { name: 'PyTorch', color: 'red', icon: '🔥' },
+    { name: 'scikit-learn', color: 'green', icon: '🤖' }
+  ];
+
+  return (
+    <div className="absolute inset-0 pointer-events-none">
+      {technologies.map((tech, index) => (
+        <motion.div
+          key={tech.name}
+          className={`absolute backdrop-blur-sm text-${tech.color}-400 text-sm font-medium 
+                     px-4 py-2 rounded-xl bg-${tech.color}-500/20 border border-${tech.color}-500/30
+                     shadow-lg shadow-${tech.color}-500/20`}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{
+            opacity: [0.5, 1, 0.5],
+            scale: [1, 1.1, 1],
+            x: Math.sin(index) * 200,
+            y: Math.cos(index) * 200,
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            repeatType: "reverse",
+            delay: index * 0.3,
+          }}
+          style={{
+            left: '50%',
+            top: '50%',
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{tech.icon}</span>
+            {tech.name}
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+// Add these animations to your global CSS or style tag
+const GlobalStyles = () => (
+  <style jsx global>{`
+    @keyframes pulseWidth {
+      0%, 100% { transform: scaleX(0.8); opacity: 0.3; }
+      50% { transform: scaleX(1.2); opacity: 0.6; }
+    }
+    
+    @keyframes pulseHeight {
+      0%, 100% { transform: scaleY(0.8); opacity: 0.3; }
+      50% { transform: scaleY(1.2); opacity: 0.6; }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(20px, -20px); }
+    }
+    
+    .glow {
+      filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
+    }
+  `}</style>
+);
+
+const PoweredBySection = () => {
+  const partners = [
+    { 
+      name: 'Vercel', 
+      logo: '/vercel.svg',
+      width: 120
+    },
+    { 
+      name: 'Google Cloud', 
+      logo: '/google-cloud.svg',
+      width: 160
+    },
+    { 
+      name: 'NVIDIA', 
+      logo: '/nvidia.svg',
+      width: 140
+    },
+    { 
+      name: 'Hugging Face', 
+      logo: '/huggingface.svg',
+      width: 150
+    },
+    { 
+      name: 'TensorFlow', 
+      logo: '/tensorflow.svg',
+      width: 140
+    }
+  ];
+
+  return (
+    <div className="mt-16">
+      <p className="text-center text-sm text-gray-400 mb-8">Trusted by leading companies</p>
+      <div className="flex flex-wrap justify-center items-center gap-12">
+        {partners.map((partner) => (
+          <div 
+            key={partner.name}
+            className="group relative"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-blue-500/10 to-purple-500/0 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <img
+              src={partner.logo}
+              alt={`${partner.name} logo`}
+              style={{ 
+                width: partner.width,
+                height: 'auto',
+                filter: 'brightness(0) invert(1)',
+                opacity: 0.7
+              }}
+              className="relative transition-all duration-300 group-hover:opacity-100"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export function Hero() {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -319,92 +757,100 @@ export function Hero() {
     }
   ];
 
-  const navigationButtons = [
-    { 
-      label: 'Start Learning', 
-      icon: ChevronRight, 
-      color: 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700', 
-      action: () => navigate('/learn'),
-      primary: true
-    },
-    { 
-      label: 'System Check', 
-      icon: Cpu, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => {
-        const element = document.getElementById('system-requirements');
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const navigationButtons = {
+    internal: [
+      { 
+        label: 'Get Started', 
+        icon: ChevronRight, 
+        color: 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700', 
+        action: () => navigate('/learn'),
+        primary: true
+      },
+      { 
+        label: 'Hardware Check', 
+        icon: Cpu, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        action: () => {
+          const element = document.getElementById('system-requirements');
+          if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+      },
+      { 
+        label: 'Research', 
+        icon: Search, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        action: () => navigate('/research')
+      },
+      { 
+        label: 'API Lab', 
+        icon: Server, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        action: () => navigate('/test')
+      },
+      { 
+        label: 'AI Art', 
+        icon: Image, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        action: () => navigate('/generate')
+      },
+      { 
+        label: 'Docs', 
+        icon: FileText, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        action: () => navigate('/document-analysis')
+      },
+      { 
+        label: 'Services', 
+        icon: Server, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        action: () => navigate('/microservices')
+      },
+      { 
+        label: 'Market AI', 
+        icon: TrendingUp, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        action: () => navigate('/stocks')
       }
-    },
-    { 
-      label: 'Deep Research', 
-      icon: Search, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => navigate('/research')
-    },
-    { 
-      label: 'API Playground', 
-      icon: Cpu, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => navigate('/test')
-    },
-    { 
-      label: 'Generate Art', 
-      icon: Image, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => navigate('/generate')
-    },
-    { 
-      label: 'Document Analysis', 
-      icon: FileText, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => navigate('/document-analysis')
-    },
-    { 
-      label: 'Microservices', 
-      icon: Server, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => navigate('/microservices')
-    },
-    { 
-      label: 'Hook First', 
-      icon: Code2, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => window.open('https://hook-first.vercel.app', '_blank')
-    },
-    { 
-      label: 'Our Forum', 
-      icon: MessageSquare, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => window.open('https://synthara-developers-forum.vercel.app', '_blank')
-    },
-    { 
-      label: 'Calculus Visualization', 
-      icon: Brain, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => window.open('https://synthara-calculus-visualization.vercel.app/', '_blank')
-    },
-    { 
-      label: 'Calculus Image Generator', 
-      icon: Image, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => window.open('https://synthara-calculus-image-generator.vercel.app/', '_blank')
-    },
-    { 
-      label: 'AI Chat', 
-      icon: MessageSquare, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => window.open('https://synthara-ai-chat.vercel.app', '_blank')
-    },
-    { 
-      label: 'Commit Synthara', 
-      icon: Code2, 
-      color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
-      action: () => window.open('https://commit-synthara.vercel.app', '_blank')
-    },
-  ];
+    ],
+    external: [
+      { 
+        label: 'Hook', 
+        icon: Code2, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        url: 'https://hook-first.vercel.app'
+      },
+      { 
+        label: 'Community', 
+        icon: MessageSquare, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        url: 'https://synthara-developers-forum.vercel.app'
+      },
+      { 
+        label: 'Math Lab', 
+        icon: Brain, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        url: 'https://synthara-calculus-visualization.vercel.app/'
+      },
+      { 
+        label: 'Math Art', 
+        icon: Image, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        url: 'https://synthara-calculus-image-generator.vercel.app/'
+      },
+      { 
+        label: 'Chat', 
+        icon: MessageSquare, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        url: 'https://synthara-ai-chat.vercel.app'
+      },
+      { 
+        label: 'Commit', 
+        icon: Code2, 
+        color: 'bg-white/5 hover:bg-white/10 backdrop-blur-sm', 
+        url: 'https://commit-synthara.vercel.app'
+      }
+    ]
+  };
 
   const handleOpenCredits = () => {
     const modal = document.getElementById('credits-modal');
@@ -647,8 +1093,14 @@ export function Hero() {
   );
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
-      <div className="container mx-auto px-4 py-12 relative z-10">
+    <div className="min-h-screen bg-gradient-to-b from-black via-purple-900/10 to-black relative overflow-hidden">
+      <GlobalStyles />
+      {/* Background Visualizations */}
+      <ParticleBackground />
+      <AnimatedGrid />
+      <FloatingTechStack />
+
+      <div className="container mx-auto px-4 py-16 relative">
         {/* Company Logo Section */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
@@ -661,7 +1113,17 @@ export function Hero() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
+            {/* Flame effect layers */}
+            <div className="absolute inset-0 animate-flame-spread">
+              <div className="absolute inset-0 bg-gradient-to-t from-orange-500 via-red-500 to-yellow-300 rounded-full blur-xl opacity-0 animate-flame-pulse" />
+              <div className="absolute inset-0 bg-gradient-to-t from-red-600 via-orange-400 to-yellow-200 rounded-full blur-lg opacity-0 animate-flame-pulse-delay" />
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 via-orange-400 to-red-500 rounded-full blur-md opacity-0 animate-flame-pulse-slow" />
+            </div>
+            
+            {/* Original glow effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-50" />
+            
+            {/* Logo image */}
             <img 
               src="https://avatars.githubusercontent.com/u/203538727?s=200&v=4"
               alt="Synthara Logo"
@@ -670,173 +1132,136 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Announcements section */}
-        {showBanner && (
-          <>
-            {announcements.map(renderAnnouncement)}
-          </>
-        )}
-
+        {/* Technology Visualization */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center relative z-10"
+          transition={{ delay: 0.3 }}
+          className="mb-12"
         >
-          {/* Profile Section */}
-          <div className="relative backdrop-blur-xl bg-white/5 p-8 rounded-2xl border border-white/10 shadow-2xl mb-12">
-            <div className="flex flex-col items-center">
-              {/* Avatar - coding.png with exact resolution */}
-              <motion.div 
-                className="relative mb-6"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-50" />
-                <img 
-                  src="/coding.png"
-                  alt="Coding Profile"
-                  className="relative rounded-full border-2 border-white/20"
-                  style={{ width: 'auto', height: 'auto' }}
-                />
-              </motion.div>
-
-              {/* Social Links */}
-              <div className="flex flex-wrap justify-center gap-4 mb-6">
-                {socialLinks.map((social) => (
-                  <motion.a
-                    key={social.name}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`p-2 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10 transition-colors duration-200 ${social.color} group`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    title={social.name}
-                  >
-                    <social.icon className="w-5 h-5" />
-                  </motion.a>
-                ))}
-              </div>
-
-              {/* Profile Info */}
-              <div className="space-y-3">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                  Niladri Das
-                </h2>
-                <p className="text-lg text-gray-300">Cloud Environment Automation @Brev.dev</p>
-                <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
-                  <span className="flex items-center gap-2">
-                    <Cpu className="w-4 h-4 text-purple-400" />
-                    Machine Learning
-                  </span>
-                  <span className="w-1 h-1 bg-gray-500 rounded-full" />
-                  <span className="flex items-center gap-2">
-                    <Code2 className="w-4 h-4 text-blue-400" />
-                    Full Stack Development
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="mb-12 space-y-6">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Machine Learning Platform
-            </h1>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Your interactive guide to mastering machine learning concepts. Built with practical implementation experience and industry best practices.
-            </p>
-          </div>
-
-          {/* Navigation Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-          >
-            {navigationButtons.map((button) => (
-              <Button 
-                key={button.label}
-                onClick={button.action}
-                className={`${button.color} p-6 rounded-xl flex items-center justify-center gap-3 transition-all duration-300 
-                  ${button.primary ? 'col-span-full sm:col-span-2 lg:col-span-3' : ''}`}
-              >
-                <span className="text-lg">{button.label}</span>
-                <button.icon className="w-5 h-5" />
-              </Button>
-            ))}
-          </motion.div>
+          <TechnologyVisualization />
         </motion.div>
 
-        {/* Generated Image Container with Enhanced Visual Effects */}
+        {/* Main Content */}
+        <div className="mb-12 space-y-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+            Machine Learning Platform
+          </h1>
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            Your interactive guide to mastering machine learning concepts. Built with practical implementation experience and industry best practices.
+          </p>
+        </div>
+
+        {/* Interactive Tech Web */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-16"
+        >
+          <InteractiveTechWeb />
+        </motion.div>
+
+        {/* Navigation Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
+          {navigationButtons.internal.map((button, index) => (
+            <Button
+              key={index}
+              onClick={button.action}
+              className={`
+                w-full relative group overflow-hidden
+                ${button.primary 
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white' 
+                  : `${button.color} hover:bg-white/15`}
+                transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10
+                border border-white/10 hover:border-white/20
+              `}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-white/5 to-purple-500/0 
+                            translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+              <div className="relative flex items-center justify-center gap-2">
+                <button.icon className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                <span className="font-medium">{button.label}</span>
+              </div>
+            </Button>
+          ))}
+        </motion.div>
+
+        {/* External Links */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
+          {navigationButtons.external.map((button, index) => (
+            <Button
+              key={index}
+              onClick={() => window.open(button.url, '_blank')}
+              className={`
+                w-full relative group overflow-hidden
+                ${button.color} hover:bg-white/15
+                transition-all duration-300
+                border border-white/10 hover:border-white/20
+                flex items-center justify-center gap-2
+              `}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-white/5 to-purple-500/0 
+                            translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+              <div className="relative flex items-center justify-center gap-2">
+                <button.icon className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                <span className="font-medium">{button.label}</span>
+                <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 
+                                      translate-x-[-10px] group-hover:translate-x-0 
+                                      transition-all duration-300" />
+              </div>
+            </Button>
+          ))}
+        </div>
+
+        {/* Generated Image Container */}
         {generatedImage && (
           <motion.div
-            // Fade-in animation with slight scale effect
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="mt-12 max-w-2xl mx-auto"
           >
             <div className="relative">
-              {/* Background gradient effect for depth */}
               <div 
                 className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-purple-600/30 blur-3xl opacity-30" 
-                // Creates a soft, blurred background glow
               />
-              
               <img
                 src={generatedImage}
                 alt="AI Generated Art"
-                className="
-                  relative                    /* Positions above the gradient background */
-                  rounded-3xl                 /* Rounded corners for modern look */
-                  border border-white/20      /* Subtle border with 20% opacity */
-                  shadow-2xl                  /* Deep shadow for depth */
-                  transform                   /* Enables CSS transforms */
-                  hover:scale-[1.02]         /* Slight scale up on hover */
-                  transition-transform        /* Smooth transition for hover effect */
-                  duration-300               /* 300ms animation duration */
-                "
+                className="relative rounded-3xl border border-white/20 shadow-2xl transform hover:scale-[1.02] transition-transform duration-300"
               />
             </div>
-            
-            {/* Caption with modern styling */}
-            <p className="
-              text-center 
-              text-sm 
-              text-blue-300/70              /* Light blue text with 70% opacity */
-              mt-4 
-              font-light                    /* Thin font weight for modern look */
-            ">
+            <p className="text-center text-sm text-blue-300/70 mt-4 font-light">
               AI Generated Visualization
             </p>
           </motion.div>
         )}
 
         <CreditsModal onClose={handleCloseCredits} />
-
-        {/* Company Section */}
-        <div className="mt-16">
-          <CompanySection />
-        </div>
+        <CompanySection />
 
         {/* System Requirements */}
         <div className="mt-16" id="system-requirements">
           <SystemRequirementsChecker />
         </div>
       </div>
+      
       {showHiringForm && (
         <HiringForm 
           isOpen={showHiringForm} 
           onClose={() => {
-            console.log('Closing hiring form'); // Add this for debugging
+            console.log('Closing hiring form');
             setShowHiringForm(false);
           }} 
         />
       )}
       <PopularModelsSection />
+      <PoweredBySection />
     </div>
   );
 }

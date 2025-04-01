@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, X, Menu } from 'lucide-react';
+import { Home, X, Menu, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export function Navbar() {
@@ -24,6 +24,15 @@ export function Navbar() {
 
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center gap-4">
+          <a 
+            href="https://github.com/bniladridas/keynote-niladridas"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors"
+          >
+            <Github className="w-5 h-5" />
+            <span className="hidden lg:inline">GitHub</span>
+          </a>
           <Link 
             to="/learn" 
             className="text-white/70 hover:text-white transition-colors text-sm lg:text-base"

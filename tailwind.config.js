@@ -35,9 +35,25 @@ export default {
         sans: ['DM Sans', 'sans-serif'],
         mono: ['Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace']
       },
+      keyframes: {
+        dataStream: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(200%)' }
+        },
+        circuitFlow: {
+          '0%': { backgroundPosition: '0% 0%' },
+          '100%': { backgroundPosition: '100% 100%' }
+        },
+        gradient: {
+          '0%': { backgroundPosition: '0% 0%' },
+          '100%': { backgroundPosition: '100% 100%' }
+        }
+      },
       animation: {
         'spin-slow': 'spin 20s linear infinite',
         'spin-slower': 'spin 30s linear infinite',
+        'pulse-slow': 'pulse 3s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
       }
     },
   },

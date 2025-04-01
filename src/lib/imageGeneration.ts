@@ -113,19 +113,77 @@ class ImageGenerationService {
   }
 
   public async generateHeroImage(): Promise<string> {
-    // Enhanced AI prompt for generating modern tech-themed images
-    // Each line carefully crafted to create specific visual elements
-    const prompt = `Create a hyper-modern, minimalist representation of AI and machine learning. 
-      Use a sophisticated dark theme with:
-      // Color scheme: Electric blue and deep purple for a futuristic look
-      - Subtle neon accents in electric blue and deep purple
-      // Dynamic elements: Adding movement and depth
-      - Floating geometric particles
-      // Neural network visualization: Core AI representation
-      - Abstract neural pathways with gradient illumination
-      // Modern design principles: Keeping it clean and professional
-      - Clean, sharp edges and modern design elements
-      Style should convey cutting-edge technology with a professional aesthetic.`;
+    const prompt = `Create a hyper-realistic, professional visualization for an advanced ML Learning Platform:
+
+    Key visual elements:
+    - Ultra-detailed neural network visualization with photorealistic metallic nodes
+    - Dynamic particle systems representing data flow in 3D space
+    - Ray-traced global illumination with realistic light bounces
+    - Premium glass and metal materials with accurate reflections
+    - Depth of field effect focusing on key elements
+    - Volumetric lighting through particle systems
+    - High-end workstation/server room environment in background
+    - 8K resolution quality textures and materials
+
+    Lighting specifications:
+    - Primary key light from top-right (blue tint)
+    - Rim lighting on neural network nodes (purple accent)
+    - Subtle volumetric rays through particle systems
+    - Screen glow from multiple monitor displays
+    - Reflective surfaces with accurate specular highlights
+    - Ambient occlusion for depth and realism
+    - HDR lighting with realistic exposure
+    - Subtle lens flares from bright elements
+
+    Material properties:
+    - Brushed aluminum for hardware components
+    - Glass/acrylic panels with accurate refraction
+    - Carbon fiber textures for structural elements
+    - Chrome accents with perfect reflections
+    - Matte black server racks with subtle texture
+    - LED strips with realistic emission
+    - Polished concrete flooring with reflections
+    - Premium workstation displays with anti-glare coating
+
+    Environmental details:
+    - Modern data center / research lab setting
+    - Cable management with premium braided cables
+    - Cooling system with subtle vapor effects
+    - Status LEDs reflecting off surfaces
+    - Clean, minimalist workspace organization
+    - Professional monitor arrays with bezels
+    - High-end workstation peripherals
+    - Server racks with active status indicators
+
+    Composition:
+    - Rule of thirds with main focus on neural network
+    - Leading lines through data flow particles
+    - Depth through layered elements
+    - Foreground, midground, background separation
+    - Professional wide-aspect ratio (16:9)
+    - Cinematic depth of field
+    - High-end production quality
+    - 8K resolution output (7680x4320)
+
+    Style requirements:
+    - Photorealistic rendering quality
+    - Professional corporate aesthetic
+    - High-end product visualization style
+    - Perfect technical accuracy
+    - Premium materials and finishes
+    - Architectural visualization quality
+    - Ray-traced reflections and shadows
+    - Cinema-grade post-processing
+
+    The image should convey:
+    - Enterprise-level technology
+    - Professional ML/AI capabilities
+    - Premium quality and attention to detail
+    - Technical sophistication
+    - Corporate excellence
+    - Innovation leadership
+    - Research and development focus
+    - Professional learning environment`;
     
     return this.generateImage(prompt);
   }
