@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "An interactive ML Learning Platform"
+version: 1.0.0
+date-released: 2025-04-06
+authors:
+  - family-names: Das
+    given-names: Niladri
+    orcid: "https://orcid.org/0009-0002-6619-5691"
+    affiliation: "Founder and DevRel"
+abstract: "An interactive ML Learning Platform that combines modern web design with AI-powered learning."
+keywords:
+  - machine learning
+  - interactive learning
+  - AI
+  - web platform
+repository-code: "https://github.com/bniladridas/keynote.niladridas"
